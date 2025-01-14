@@ -1,0 +1,81 @@
+@startuml
+title Диаграмма сущностей "Умный дом"
+
+entity Account {
+    * account_id : UUID
+    --
+    username : String
+    email : String
+    hashed_password : String
+    preferences : String
+}
+
+entity Residence {
+    * residence_id : UUID
+    --
+    owner_id : UUID
+    location : String
+    details : String
+}
+
+entity Appliance {
+    * appliance_id : UUID
+    --
+    category_id : UUID
+    residence_id : UUID
+    serial : String
+    state : Enum
+    specs : String
+}
+
+entity ApplianceCategory {
+    * category_id : UUID
+    --
+    label : String
+    description : String
+}
+
+entity LogRecord {
+    * record_id : UUID
+    --
+    appliance_id : UUID
+    timestamp : DateTime
+    payload : String
+}
+
+entity SubscriptionPlan {
+    * plan_id : UUID
+    --
+    account_id : UUID
+    plan_type : String
+    metadata : String
+}
+
+entity Automation {
+    * automation_id : UUID
+    --
+    account_id : UUID
+    title : String
+    description : String
+    data : String
+}
+
+entity AutomationTask {
+    * task_id : UUID
+    --
+    automation_id : UUID
+    appliance_id : UUID
+    command : String
+    extra_info : String
+}
+
+Account ||--o{ Residence : "Владеет"
+Residence ||--o{ Appliance : "Установлено в"
+Appliance ||--o{ LogRecord : "Сохраняет события"
+ApplianceCategory ||--o{ Appliance : "Категория"
+Account ||--o{ SubscriptionPlan : "Активировал план"
+Account ||--o{ Automation : "Создает"
+Automation ||--o{ AutomationTask : "Содержит задачи"
+AutomationTask }o--|| Appliance : "Выполняет"
+
+@enduml

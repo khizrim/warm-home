@@ -1,0 +1,66 @@
+@startuml Containers
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Диаграмма компонентов "Умный Дом"
+
+Person(client, "Пользователь")
+
+System_Boundary(SmartSystem, "Умная Экосистема") {
+    Container(WebInterface, "Веб-интерфейс", "JavaScript/HTML", "Управление через браузер")
+
+    Container(APIGateway, "Шлюз API", "Nginx", "Авторизация и распределение запросов")
+
+    Container_Boundary(ProfileModule, "Модуль Пользователя") {
+        Component(UserManager, "Управление пользователем", "Java", "Регистрация, авторизация, обновление данных")
+        ContainerDb(ProfileDatabase, "База Пользователей", "PostgreSQL", "Информация о пользователях и настройках")
+    }
+
+    Container_Boundary(SmartAutomation, "Автоматизация") {
+        Component(ScenarioManager, "Менеджер сценариев", "Java", "Создание и выполнение сценариев")
+        ContainerDb(AutomationDB, "База Сценариев", "PostgreSQL", "Сценарии и их параметры")
+    }
+
+    Container_Boundary(DeviceManager, "Устройства") {
+        Component(HeaterController, "Обогрев", "Java", "Управление температурой")
+        Component(LightController, "Освещение", "Java", "Настройки света")
+        Component(CameraController, "Камеры", "Java", "Контроль видеонаблюдения")
+        Component(APIWrapper, "Обертка API устройств", "Java", "Инкапсуляция вызовов внешних API")
+        ContainerDb(DeviceDatabase, "База Устройств", "PostgreSQL", "Настройки, данные и статусы устройств")
+    }
+
+    Container_Boundary(NotificationSystem, "Система Уведомлений") {
+        Component(NotificationDispatcher, "Отправка уведомлений", "Java", "Создание и рассылка уведомлений")
+    }
+
+    Container_Boundary(AnalyticsEngine, "Модуль Аналитики") {
+        Component(ReportGenerator, "Создание отчетов", "Java", "Сбор данных для аналитики")
+        ContainerDb(AnalyticsDB, "База Данных Аналитики", "PostgreSQL", "История отчетов и трендов")
+    }
+
+    SystemQueue(EventQueue, "EventBus", "Шина сообщений", "Оркестрация событий")
+}
+
+Rel(client, WebInterface, "Использует")
+Rel(WebInterface, APIGateway, "Отправляет запросы", "JSON")
+Rel(APIGateway, ProfileModule, "Запросы профиля", "JSON")
+Rel(APIGateway, SmartAutomation, "Работа с автоматизациями", "JSON")
+Rel(APIGateway, DeviceManager, "Данные и управление устройствами", "JSON")
+Rel(APIGateway, NotificationSystem, "Подписка на события", "JSON")
+Rel(APIGateway, AnalyticsEngine, "Получение аналитики", "JSON")
+
+Rel(ProfileModule, ProfileDatabase, "Чтение/запись", "SQL")
+Rel(SmartAutomation, AutomationDB, "Чтение/запись", "SQL")
+Rel(DeviceManager, DeviceDatabase, "Чтение/запись", "SQL")
+Rel(AnalyticsEngine, AnalyticsDB, "Чтение/запись", "SQL")
+
+Rel(SmartAutomation, EventQueue, "Публикация изменений сценариев", "JSON")
+Rel(NotificationSystem, EventQueue, "Обработка уведомлений", "JSON")
+Rel(DeviceManager, EventQueue, "Передача статусов устройств", "JSON")
+Rel(AnalyticsEngine, EventQueue, "Получение данных", "JSON")
+
+Rel(APIWrapper, EventQueue, "Взаимодействие с оборудованием", "JSON/Binary")
+
+Rel(APIWrapper, HeaterController, "Обогрев")
+Rel(APIWrapper, LightController, "Освещение")
+Rel(APIWrapper, CameraController, "Камеры")
+@enduml
