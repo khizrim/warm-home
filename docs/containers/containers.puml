@@ -1,0 +1,44 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Диаграмма контейнеров "Умный дом"
+
+Person(client, "Клиент")
+
+System_Boundary(SmartSystem, "Интеллектуальная система") {
+    Container(WebDashboard, "Дашборд", "JavaScript/HTML", "Пользовательский интерфейс для управления домом")
+    Container(APILayer, "Слой API", "Nginx", "Маршрутизация и аутентификация запросов")
+
+    Container(AuthService, "Сервис входа", "Java", "Авторизация и токены")
+
+    Container(AutomationService, "Сервис автоматизаций", "Java", "Управление сценариями")
+    Container(DeviceManagementService, "Сервис устройств", "Java", "Настройка, контроль и мониторинг оборудования")
+    Container(AnalyticsModule, "Модуль отчетов", "Java", "Создание аналитических отчетов")
+    Container(AlertingService, "Сервис оповещений", "Java", "Уведомления о событиях")
+    Container(ProfileService, "Сервис пользователей", "Java", "Обработка профилей, настройки и управление планами")
+    Container(SupportService, "Сервис поддержки", "Java", "Обработка заявок на обслуживание")
+
+    SystemQueue(EventBus, "EventBus", "Шина сообщений")
+    Container_Ext(ExternalAPIs, "Интеграция API", "Сторонние системы и устройства")
+    Container_Ext(CacheLayer, "Кэширование", "Redis")
+}
+
+Rel(client, WebDashboard, "Взаимодействие через интерфейс")
+Rel(WebDashboard, APILayer, "Отправляет запросы", "HTTP/JSON")
+Rel(APILayer, AuthService, "Проверка входа", "HTTP/JSON")
+Rel(APILayer, ProfileService, "Обновление данных профиля", "HTTP/JSON")
+Rel(APILayer, AutomationService, "Работа с автоматизациями", "HTTP/JSON")
+Rel(APILayer, DeviceManagementService, "Контроль устройств", "HTTP/JSON")
+Rel(APILayer, AnalyticsModule, "Запрос аналитики", "HTTP/JSON")
+Rel(APILayer, AlertingService, "Настройка уведомлений", "HTTP/JSON")
+Rel(APILayer, SupportService, "Создание заявки", "HTTP/JSON")
+Rel(APILayer, CacheLayer, "Чтение/запись данных", "HTTP/JSON")
+
+Rel(DeviceManagementService, ExternalAPIs, "Интеграция данных оборудования", "HTTP/Binary")
+Rel(AutomationService, EventBus, "Публикует обновления сценариев", "JSON")
+Rel(AlertingService, EventBus, "Подписывается на события", "JSON")
+Rel(AnalyticsModule, EventBus, "Использует данные для анализа", "JSON")
+Rel(DeviceManagementService, EventBus, "Передает события устройств", "JSON")
+
+@enduml
+

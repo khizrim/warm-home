@@ -1,0 +1,23 @@
+@startuml
+title Контекстная диаграмма "Умный дом"
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+Person(user, "Пользователь", "Владелец умного дома, использует веб- и мобильное приложение")
+System_Boundary(SmartHomeSystem, "Система Умного Дома") {
+    System(SmartHomeApp, "Приложение Умного Дома", "Веб и мобильное приложение для управления устройствами, сценариями и уведомлениями")
+    System(APIService, "API Умного Дома", "Центральный API для обработки запросов")
+    System_Ext(HeatingAPI, "API управления отоплением", "Управление обогревателями через внешнее API")
+    System_Ext(NotificationsAPI, "Уведомления", "Система для отправки уведомлений пользователям")
+    System_Ext(SupportAPI, "Техническая поддержка", "Внешняя система для обработки тикетов поддержки")
+    System_Ext(ThirdPartyDeviceAPI, "API внешних устройств", "Интеграция с устройствами через сторонние API")
+}
+
+Rel(user, SmartHomeApp, "Использует для управления и мониторинга")
+Rel(SmartHomeApp, APIService, "Отправка запросов управления", "HTTP/JSON")
+Rel(APIService, HeatingAPI, "Управление температурой", "HTTP/REST")
+Rel(APIService, NotificationsAPI, "Отправка уведомлений", "HTTP/REST")
+Rel(APIService, SupportAPI, "Запросы в поддержку", "HTTP/REST")
+Rel(APIService, ThirdPartyDeviceAPI, "Интеграция с устройствами", "HTTP/REST")
+
+@enduml

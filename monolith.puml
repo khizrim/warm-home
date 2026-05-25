@@ -1,0 +1,22 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title "Система управления отоплением"
+
+Person(User, "Пользователь", "Взаимодействует с системой через веб-интерфейс")
+
+Enterprise_Boundary(HeatingControlSystem, "Система контроля отоплением") {
+  Container(WebInterface, "Веб-интерфейс", "JavaScript/HTML", "Предоставляет пользовательский интерфейс")
+  Container(AppServer, "Сервер приложения", "Java", "Обрабатывает запросы и управляет бизнес-логикой")
+}
+
+System_Ext(TempSensor, "Датчик температуры", "Hardware", "Передаёт данные о температуре")
+System_Ext(HeatingModule, "Модуль управления отоплением", "Hardware", "Управляет оборудованием отопления")
+
+
+Rel(User, WebInterface, "Взаимодействие через пользовательский интерфейс")
+Rel(WebInterface, AppServer, "Отправляет запросы и получает данные")
+Rel(AppServer, TempSensor, "Получает данные температуры")
+Rel(AppServer, HeatingModule, "Передаёт команды управления отоплением")
+
+@enduml

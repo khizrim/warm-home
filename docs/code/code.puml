@@ -1,0 +1,56 @@
+@startuml
+title Device API Wrapper
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+class DeviceAPIOrchestrator {
+    + CommandHandler handler
+    + startCommand()
+    + stopCommand()
+}
+
+class CommandHandler {
+    + CommandQueue queue
+    + processCommand(command: String)
+}
+
+class CommandQueue {
+    + push(command: String)
+    + pull() : String
+}
+
+class DeviceDriver {
+    + executeAction(action: String)
+    + initializeDriver()
+}
+
+interface DeviceDriverInterface {
+    + init()
+    + shutdown()
+    + sendCommand(command: String)
+}
+
+class HeatingDriver {
+    + setTemperature(level: Int)
+    + getTemperature()
+}
+
+class LightingDriver {
+    + switchLight(on: Boolean)
+    + adjustBrightness(level: Int)
+}
+
+class CameraDriver {
+    + turnCamera(on: Boolean)
+    + startRecording()
+    + stopRecording()
+}
+
+DeviceAPIOrchestrator -down-> CommandHandler : "Контролирует команды"
+CommandHandler -down-> CommandQueue : "Очередь выполнения"
+CommandHandler -down-> DeviceDriver : "Запросы драйверам"
+DeviceDriver -down-> DeviceDriverInterface : "Реализация интерфейса драйвера"
+DeviceDriverInterface -down-> HeatingDriver : "Драйвер температуры"
+DeviceDriverInterface -down-> LightingDriver : "Драйвер освещения"
+DeviceDriverInterface -down-> CameraDriver : "Драйвер камеры"
+
+@enduml
